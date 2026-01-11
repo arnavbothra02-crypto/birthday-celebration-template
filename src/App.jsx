@@ -111,11 +111,11 @@ function App() {
           <h1 id="heroTitle">
             {birthdayReached ? (
               <>
-                Happy Birthday <span className="highlight">Swastika</span> 🎂
+                Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
               </>
             ) : (
               <>
-                Counting down to <span className="highlight">Swastika's</span>{" "}
+                Counting down to <span className="highlight">{PERSON_NAME}'s</span>{" "}
                 special day 🎂
               </>
             )}
