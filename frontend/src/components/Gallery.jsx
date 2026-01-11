@@ -2,20 +2,20 @@ export default function Gallery({ isActive }) {
   if (!isActive) return null;
 
   const images = [
-    "/gallery/photo1.jpg",
-    "/gallery/photo2.jpg",
-    "/gallery/photo3.jpg",
-    "/gallery/photo4.jpg",
+    "/images/photo1.jpg",
+    "/images/photo2.jpg",
+    "/images/photo3.jpg",
+    "/images/photo4.jpg",
   ];
 
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "16px",
-        padding: "20px",
-        maxWidth: "1000px",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+        gap: "18px",
+        padding: "24px",
+        maxWidth: "1100px",
         margin: "0 auto",
       }}
     >
@@ -26,14 +26,18 @@ export default function Gallery({ isActive }) {
           alt={`Memory ${index + 1}`}
           style={{
             width: "100%",
-            height: "260px",
+            height: "280px",
             objectFit: "cover",
-            borderRadius: "16px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-            transition: "transform 0.3s ease",
+            borderRadius: "18px",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.18)",
+            transition: "transform 0.35s ease",
           }}
-          onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-          onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.transform = "scale(1.06)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.transform = "scale(1)")
+          }
         />
       ))}
     </div>
