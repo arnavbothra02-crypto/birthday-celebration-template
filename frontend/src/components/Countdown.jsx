@@ -1,64 +1,70 @@
 import { useEffect, useState } from "react";
 import "./Countdown.css";
 
-export default function Countdown({ unlockTimestamp, onBirthdayReached }) {
-  const getTimeLeft = () => {
-    const diff = unlockTimestamp - Date.now();
+function Countdown({ unlockTimestamp, onBirthdayReached }) {
+  const calculateTimeLeft = () => {
+    const now = Date.now();
+    const diff = unlockTimestamp - now;
 
     if (diff <= 0) {
       return {
+        done: true,
         days: 0,
         hours: 0,
         minutes: 0,
         seconds: 0,
-        unlocked: true,
       };
     }
 
     return {
+      done: false,
       days: Math.floor(diff / (1000 * 60 * 60 * 24)),
       hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
       minutes: Math.floor((diff / (1000 * 60)) % 60),
       seconds: Math.floor((diff / 1000) % 60),
-      unlocked: false,
     };
   };
 
-  const [time, setTime] = useState(getTimeLeft());
-  const [flip, setFlip] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const updated = getTimeLeft();
-      setTime(updated);
-      setFlip((f) => !f);
+      setTimeLeft((prev) => {
+        const updated = calculateTimeLeft();
 
-      if (updated.unlocked) {
-        onBirthdayReached();
-        clearInterval(timer);
-      }
+        if (!prev.done && updated.done) {
+          onBirthdayReached?.();
+        }
+
+        return updated;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [unlockTimestamp]);
+
+  if (timeLeft.done) return null;
 
   return (
-    <div className="countdown-wrapper">
-      <div className="countdown-glass">
-        {["days", "hours", "minutes", "seconds"].map((key) => (
-          <div
-            key={key}
-            className={`time-box ${flip ? "flip" : ""} ${
-              key === "seconds" && time.minutes === 0 ? "pulse" : ""
-            }`}
-          >
-            <span className="time-value">
-              {String(time[key]).padStart(2, "0")}
-            </span>
-            <span className="time-label">{key}</span>
-          </div>
-        ))}
+    <div className="countdown">
+      <div className="time-box">
+        <span>{timeLeft.days}</span>
+        <small>Days</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.hours}</span>
+        <small>Hours</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.minutes}</span>
+        <small>Minutes</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.seconds}</span>
+        <small>Seconds</small>
       </div>
     </div>
   );
 }
+
+export default Countdown;
