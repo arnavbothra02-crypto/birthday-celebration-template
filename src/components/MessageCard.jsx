@@ -173,7 +173,7 @@ CEO of Missing Her`;
 
   return (
     <section className="message">
-      <h2>Happy Birthday, Swastika 🐉💖</h2>
+      <h2>Happy Birthday, {PERSON_NAME} 🐉💖</h2>
 
       <div className="curtain-container">
         <div className="curtain-rod"></div>
