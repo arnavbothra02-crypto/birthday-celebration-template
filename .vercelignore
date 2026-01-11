@@ -1,0 +1,6 @@
+backend/
+tests/
+node_modules/
+.git/
+.emergent/
+*.log
