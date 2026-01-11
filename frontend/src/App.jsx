@@ -1,62 +1,177 @@
-import { useEffect, useState } from "react";
-import "./Countdown.css";
+import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { useRef, useState } from "react";
+import "./App.css";
 
-function Countdown({ unlockDate, birthdayReached, onBirthdayReached }) {
-  const calculateTimeLeft = () => {
-    const now = new Date().getTime();
-    const diff = unlockDate.getTime() - now;
+import CelebrationPage from "./components/CelebrationPage";
+import Countdown from "./components/Countdown";
+import Effects from "./components/Effects";
+import Gallery from "./components/Gallery";
+import Hearts from "./components/Hearts";
+import MessageCard from "./components/MessageCard";
+import MusicPlayer from "./components/MusicPlayer";
 
-    if (diff <= 0) return null;
+gsap.registerPlugin(ScrollToPlugin);
 
-    return {
-      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((diff / (1000 * 60)) % 60),
-      seconds: Math.floor((diff / 1000) % 60),
+/* =======================
+   🔐 CONFIG (EDIT HERE)
+   ======================= */
+const PERSON_NAME = "Swastika";
+const PERSONAL_MESSAGE = "Happy Birthday ❤️ This is just for you.";
+const YOUR_NAME = "Arnav";
+
+// ⏳ TEMP FUTURE DATE TO SHOW COUNTDOWN
+const UNLOCK_DATE = new Date("2026-01-12T00:00:00");
+
+function App() {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 🔒 Date-based lock
+  const [birthdayReached, setBirthdayReached] = useState(
+    new Date() >= UNLOCK_DATE
+  );
+
+  const [showEffects, setShowEffects] = useState(false);
+
+  const page1Ref = useRef(null);
+  const page2Ref = useRef(null);
+  const page3Ref = useRef(null);
+  const page4Ref = useRef(null);
+  const musicPlayerRef = useRef(null);
+
+  const goToPage = (pageNumber) => {
+    const refs = {
+      1: page1Ref,
+      2: page2Ref,
+      3: page3Ref,
+      4: page4Ref,
     };
+
+    const currentRef = refs[currentPage];
+    const nextRef = refs[pageNumber];
+    const isForward = pageNumber > currentPage;
+
+    gsap.to(currentRef.current, {
+      x: isForward ? "-100%" : "100%",
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.inOut",
+    });
+
+    gsap.set(nextRef.current, {
+      x: isForward ? "100%" : "-100%",
+      opacity: 0,
+      visibility: "visible",
+    });
+
+    gsap.to(nextRef.current, {
+      x: "0%",
+      opacity: 1,
+      duration: 0.6,
+      delay: 0.2,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setCurrentPage(pageNumber);
+        gsap.set(currentRef.current, { visibility: "hidden", x: "0%" });
+        gsap.to(window, { scrollTo: { y: 0 }, duration: 0.3 });
+      },
+    });
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const handleBirthdayReached = () => {
+    setBirthdayReached(true);
+    setShowEffects(true);
+    setTimeout(() => setShowEffects(false), 10000);
+  };
 
-  useEffect(() => {
-    if (!timeLeft && !birthdayReached) {
-      onBirthdayReached();
-      return;
-    }
+  return (
+    <div className="app">
+      <MusicPlayer ref={musicPlayerRef} />
+      <Hearts />
 
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+      {/* ================= PAGE 1 : COUNTDOWN ================= */}
+      <div
+        ref={page1Ref}
+        className={`page ${currentPage === 1 ? "active" : ""}`}
+        style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
+      >
+        <section className="hero">
+          <h1>
+            {birthdayReached ? (
+              <>
+                Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
+              </>
+            ) : (
+              <>
+                Counting down to{" "}
+                <span className="highlight">{PERSON_NAME}'s</span> special day 🎂
+              </>
+            )}
+          </h1>
+          <p>{PERSONAL_MESSAGE}</p>
+        </section>
 
-    return () => clearInterval(timer);
-  }, [timeLeft, birthdayReached, onBirthdayReached]);
+        <Countdown
+          unlockDate={UNLOCK_DATE}
+          birthdayReached={birthdayReached}
+          onBirthdayReached={handleBirthdayReached}
+        />
 
-  // 🔒 SHOW COUNTDOWN ONLY WHEN LOCKED
-  if (!birthdayReached && timeLeft) {
-    return (
-      <div className="countdown-container">
-        <div className="countdown-box">
-          <span>{timeLeft.days}</span>
-          <label>DAYS</label>
-        </div>
-        <div className="countdown-box">
-          <span>{timeLeft.hours}</span>
-          <label>HOURS</label>
-        </div>
-        <div className="countdown-box">
-          <span>{timeLeft.minutes}</span>
-          <label>MINUTES</label>
-        </div>
-        <div className="countdown-box">
-          <span>{timeLeft.seconds}</span>
-          <label>SECONDS</label>
-        </div>
+        <button
+          className="celebrate-btn"
+          disabled={!birthdayReached}
+          onClick={() => goToPage(2)}
+        >
+          🎀 Let's Celebrate
+        </button>
       </div>
-    );
-  }
 
-  // 🔓 AFTER UNLOCK → HIDE COUNTDOWN
-  return null;
+      {/* ================= PAGE 2 ================= */}
+      <div
+        ref={page2Ref}
+        className={`page ${currentPage === 2 ? "active" : ""}`}
+        style={{ visibility: currentPage === 2 ? "visible" : "hidden" }}
+      >
+        <CelebrationPage
+          onComplete={() => goToPage(3)}
+          musicPlayerRef={musicPlayerRef}
+        />
+      </div>
+
+      {/* ================= PAGE 3 ================= */}
+      <div
+        ref={page3Ref}
+        className={`page ${currentPage === 3 ? "active" : ""}`}
+        style={{ visibility: currentPage === 3 ? "visible" : "hidden" }}
+      >
+        <button className="back-btn" onClick={() => goToPage(2)}>
+          ← Back
+        </button>
+        <MessageCard isActive={currentPage === 3} />
+        <button className="page-nav-btn" onClick={() => goToPage(4)}>
+          📸 View Our Memories
+        </button>
+      </div>
+
+      {/* ================= PAGE 4 ================= */}
+      <div
+        ref={page4Ref}
+        className={`page ${currentPage === 4 ? "active" : ""}`}
+        style={{ visibility: currentPage === 4 ? "visible" : "hidden" }}
+      >
+        <button className="back-btn" onClick={() => goToPage(3)}>
+          ← Back
+        </button>
+        <Gallery isActive={currentPage === 4} />
+        <section className="final">
+          <h2>💖 Forever Yours — {YOUR_NAME} 💖</h2>
+          <p>Every memory, every moment, always you ✨</p>
+        </section>
+      </div>
+
+      {showEffects && <Effects />}
+    </div>
+  );
 }
 
-export default Countdown;
+export default App;
