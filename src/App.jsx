@@ -2,7 +2,7 @@ import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useRef, useState, useEffect } from "react";
 import "./App.css";
-import { PERSON_NAME, UNLOCK_DATE, isBirthdayUnlocked } from "./config";
+import { PERSON_NAME, UNLOCK_DATE, isBirthdayUnlocked, BIRTHDAY_MESSAGE } from "./config";
 import CelebrationPage from "./components/CelebrationPage";
 import Countdown from "./components/Countdown";
 import Effects from "./components/Effects";
