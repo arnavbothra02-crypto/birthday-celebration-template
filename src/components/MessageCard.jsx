@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
+import { PERSON_NAME } from "../config";
 import Confetti from "./Confetti";
 import "./MessageCard.css";
 
@@ -13,7 +14,7 @@ function MessageCard({ isActive }) {
   const curtainHintRef = useRef(null);
   const messageContentRef = useRef(null);
 
-  const message = `Dear Swastika,
+  const message = `Dear ${PERSON_NAME},
 
 This is a formal yet deeply personal announcement marking the annual celebration of someone who continues to redefine excellence simply by existing.
 
