@@ -208,8 +208,8 @@ function App() {
             </button>
             <Gallery isActive={currentPage === 4} />
             <section className="final">
-              <h2 className="final-message">💖 Forever Yours — Mother of Dragons, MD 🐉 💖</h2>
-              <p className="final-subtitle">With admiration, loyalty, and feelings that refuse to be archived ✨</p>
+              <h2 className="final-message">💖 {CLOSING_SIGNATURE} 💖</h2>
+              <p className="final-subtitle">{BIRTHDAY_MESSAGE}</p>
             </section>
           </div>
         </>
