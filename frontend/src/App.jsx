@@ -19,14 +19,19 @@ gsap.registerPlugin(ScrollToPlugin);
 const PERSON_NAME = "Swastika";
 const PERSONAL_MESSAGE = "Happy Birthday ❤️ This is just for you.";
 const YOUR_NAME = "Arnav";
-const UNLOCK_TIMESTAMP = new Date("2026-02-01T00:00:00+05:30").getTime(); // 1 Feb midnight
+
+/*
+  ✅ USE TIMESTAMP (NOT Date object)
+  Midnight 1 Feb 2026 IST
+*/
+const UNLOCK_TIMESTAMP = new Date("2026-02-01T00:00:00+05:30").getTime();
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 🔒 DATE-BASED LOCK (no localStorage, no cache issues)
+  // 🔒 LOCK BASED ON TIMESTAMP
   const [birthdayReached, setBirthdayReached] = useState(
-    new Date() >= UNLOCK_DATE
+    Date.now() >= UNLOCK_TIMESTAMP
   );
 
   const [showEffects, setShowEffects] = useState(false);
@@ -94,7 +99,7 @@ function App() {
         style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
       >
         <section className="hero">
-          <h1 id="heroTitle">
+          <h1>
             {birthdayReached ? (
               <>
                 Happy Birthday{" "}
@@ -111,21 +116,9 @@ function App() {
         </section>
 
         <Countdown
+          unlockTimestamp={UNLOCK_TIMESTAMP}
           onBirthdayReached={handleBirthdayReached}
-          birthdayReached={birthdayReached}
-          unlockDate={UNLOCK_DATE}
         />
-
-        <section className="teaser">
-          <h2 id="teaserHeading">
-            {birthdayReached
-              ? "💖 Ready for your surprise! 💖"
-              : "✨ A special celebration awaits you at midnight... ✨"}
-          </h2>
-          <p className="teaser-hint">
-            Something magical is about to unfold 💫
-          </p>
-        </section>
 
         <button
           className="celebrate-btn"
@@ -136,7 +129,7 @@ function App() {
         </button>
       </div>
 
-      {/* ================= PAGE 2 : CELEBRATION ================= */}
+      {/* ================= PAGE 2 ================= */}
       <div
         ref={page2Ref}
         className={`page ${currentPage === 2 ? "active" : ""}`}
@@ -148,7 +141,7 @@ function App() {
         />
       </div>
 
-      {/* ================= PAGE 3 : MESSAGE ================= */}
+      {/* ================= PAGE 3 ================= */}
       <div
         ref={page3Ref}
         className={`page ${currentPage === 3 ? "active" : ""}`}
@@ -165,7 +158,7 @@ function App() {
         </button>
       </div>
 
-      {/* ================= PAGE 4 : GALLERY ================= */}
+      {/* ================= PAGE 4 ================= */}
       <div
         ref={page4Ref}
         className={`page ${currentPage === 4 ? "active" : ""}`}
@@ -178,12 +171,8 @@ function App() {
         <Gallery isActive={currentPage === 4} />
 
         <section className="final">
-          <h2 className="final-message">
-            💖 Forever Yours — {YOUR_NAME} 💖
-          </h2>
-          <p className="final-subtitle">
-            Every memory, every moment, always you ✨
-          </p>
+          <h2>💖 Forever Yours — {YOUR_NAME} 💖</h2>
+          <p>Every memory, every moment, always you ✨</p>
         </section>
       </div>
 
@@ -191,4 +180,5 @@ function App() {
     </div>
   );
 }
+
 export default App;
