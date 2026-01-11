@@ -1,7 +1,8 @@
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./App.css";
+import { PERSON_NAME, UNLOCK_DATE, isBirthdayUnlocked } from "./config";
 import CelebrationPage from "./components/CelebrationPage";
 import Countdown from "./components/Countdown";
 import Effects from "./components/Effects";
@@ -15,15 +16,29 @@ gsap.registerPlugin(ScrollToPlugin);
 function App() {
   const [currentPage, setCurrentPage] = useState(1); // Start at 1 for Countdown page
 
-  // ⚠️ FOR TESTING: Comment out lines 18-21 to reset on every reload
-  // Check localStorage to persist birthday reached state
+  // Real date-based lock - NOT CSS hiding
   const [birthdayReached, setBirthdayReached] = useState(() => {
+    // Check actual date first
+    if (isBirthdayUnlocked()) {
+      localStorage.setItem("birthdayReached", "true");
+      return true;
+    }
+    // Then check localStorage
     const saved = localStorage.getItem("birthdayReached");
     return saved === "true";
   });
 
-  // ✅ FOR TESTING: Uncomment this line to always show countdown on reload
-  // const [birthdayReached, setBirthdayReached] = useState(false);
+  // Check date every minute in case user leaves page open
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!birthdayReached && isBirthdayUnlocked()) {
+        setBirthdayReached(true);
+        localStorage.setItem("birthdayReached", "true");
+      }
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, [birthdayReached]);
 
   const [showEffects, setShowEffects] = useState(false);
 
