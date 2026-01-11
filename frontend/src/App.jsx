@@ -24,7 +24,7 @@ const UNLOCK_DATE = new Date("2025-02-01T00:00:00"); // 1 Feb midnight
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 🔒 LOCK LOGIC (NO localStorage, NO cache bugs)
+  // 🔒 DATE-BASED LOCK (no localStorage, no cache issues)
   const [birthdayReached, setBirthdayReached] = useState(
     new Date() >= UNLOCK_DATE
   );
@@ -97,7 +97,8 @@ function App() {
           <h1 id="heroTitle">
             {birthdayReached ? (
               <>
-                Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
+                Happy Birthday{" "}
+                <span className="highlight">{PERSON_NAME}</span> 🎂
               </>
             ) : (
               <>
@@ -190,5 +191,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
