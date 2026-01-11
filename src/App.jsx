@@ -148,7 +148,7 @@ function App() {
               <h1 id="heroTitle">
                 Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
               </h1>
-              <p>A celebration crafted with love, just for you 💗</p>
+              <p>{BIRTHDAY_MESSAGE}</p>
             </section>
 
             <Countdown
