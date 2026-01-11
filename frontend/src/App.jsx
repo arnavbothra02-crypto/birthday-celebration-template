@@ -19,7 +19,7 @@ gsap.registerPlugin(ScrollToPlugin);
 const PERSON_NAME = "Swastika";
 const PERSONAL_MESSAGE = "Happy Birthday ❤️ This is just for you.";
 const YOUR_NAME = "Arnav";
-const UNLOCK_DATE = new Date(Date.now() + 10 * 60 * 1000); // 1 Feb midnight
+const UNLOCK_TIMESTAMP = new Date("2026-02-01T00:00:00+05:30").getTime(); // 1 Feb midnight
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
