@@ -1,224 +1,70 @@
-import { gsap } from "gsap";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { PERSON_NAME, UNLOCK_DATE, isBirthdayUnlocked } from "./config";
-import CelebrationPage from "./components/CelebrationPage";
-import Countdown from "./components/Countdown";
-import Effects from "./components/Effects";
-import Gallery from "./components/Gallery";
-import Hearts from "./components/Hearts";
-import MessageCard from "./components/MessageCard";
-import MusicPlayer from "./components/MusicPlayer";
 
-gsap.registerPlugin(ScrollToPlugin);
+const PERSON_NAME = "Swastika";
+const PERSONAL_MESSAGE = "Happy Birthday ❤️ This is just for you.";
+const UNLOCK_DATE = new Date("2026-02-01T00:00:00");
+
+const IMAGES = [
+  "/images/pic1.jpeg",
+  "/images/pic2.jpeg",
+  "/images/pic3.jpeg",
+  "/images/pic4.jpeg",
+  "/images/pic5.jpeg",
+  "/images/pic6.jpeg",
+];
 
 function App() {
-  const [currentPage, setCurrentPage] = useState(1); // Start at 1 for Countdown page
+  const [now, setNow] = useState(new Date());
+  const unlocked = now >= UNLOCK_DATE;
 
-  // Real date-based lock - NOT CSS hiding
-  const [birthdayReached, setBirthdayReached] = useState(() => {
-    // Check actual date first
-    if (isBirthdayUnlocked()) {
-      localStorage.setItem("birthdayReached", "true");
-      return true;
-    }
-    // Then check localStorage
-    const saved = localStorage.getItem("birthdayReached");
-    return saved === "true";
-  });
-
-  // Check date every minute in case user leaves page open
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (!birthdayReached && isBirthdayUnlocked()) {
-        setBirthdayReached(true);
-        localStorage.setItem("birthdayReached", "true");
-      }
-    }, 60000); // Check every minute
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [birthdayReached]);
-
-  const [showEffects, setShowEffects] = useState(false);
-
-  const page1Ref = useRef(null); // Countdown page
-  const page2Ref = useRef(null); // Celebration Page
-  const page3Ref = useRef(null); // MessageCard
-  const page4Ref = useRef(null); // Gallery
-  const musicPlayerRef = useRef(null); // Music player control
-
-  const goToPage = (pageNumber) => {
-    const refs = { 1: page1Ref, 2: page2Ref, 3: page3Ref, 4: page4Ref };
-    const currentPageRef = refs[currentPage];
-    const nextPageRef = refs[pageNumber];
-
-    const isForward = pageNumber > currentPage;
-
-    // Animate out current page
-    gsap.to(currentPageRef.current, {
-      x: isForward ? "-100%" : "100%",
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.inOut",
-    });
-
-    // Prepare next page
-    gsap.set(nextPageRef.current, {
-      x: isForward ? "100%" : "-100%",
-      opacity: 0,
-      visibility: "visible",
-    });
-
-    // Animate in next page
-    gsap.to(nextPageRef.current, {
-      x: "0%",
-      opacity: 1,
-      duration: 0.6,
-      ease: "power2.inOut",
-      delay: 0.2,
-      onComplete: () => {
-        setCurrentPage(pageNumber);
-        // Reset current page position
-        gsap.set(currentPageRef.current, { x: "0%", visibility: "hidden" });
-
-        // Smooth scroll to top
-        gsap.to(window, { duration: 0.3, scrollTo: { y: 0 } });
-      },
-    });
-  };
-
-  const handleBirthdayReached = () => {
-    setBirthdayReached(true);
-    localStorage.setItem("birthdayReached", "true"); // Persist to localStorage
-    setShowEffects(true);
-    // Stop effects after some time
-    setTimeout(() => setShowEffects(false), 10000);
-  };
+  const timeLeft = UNLOCK_DATE - now;
+  const hours = Math.max(Math.floor(timeLeft / (1000 * 60 * 60)), 0);
+  const minutes = Math.max(Math.floor((timeLeft / (1000 * 60)) % 60), 0);
+  const seconds = Math.max(Math.floor((timeLeft / 1000) % 60), 0);
 
   return (
-    <div className="app">
-      <MusicPlayer ref={musicPlayerRef} />
-      <Hearts />
+    <div className="App">
+      <div className="container">
+        <h1>
+          Counting down to <span className="highlight">{PERSON_NAME}</span>'s
+          special day 🎂
+        </h1>
 
-      {/* BEFORE BIRTHDAY: Show ONLY countdown - TRUE conditional rendering */}
-      {!birthdayReached && (
-        <div ref={page1Ref} className="page active">
-          <section className="hero">
-            <h1 id="heroTitle">
-              Counting down to <span className="highlight">{PERSON_NAME}'s</span>{" "}
-              special day 🎂
-            </h1>
-            <p>A celebration crafted with love, just for you 💗</p>
-          </section>
+        <p className="message">{PERSONAL_MESSAGE}</p>
 
-          <Countdown
-            onBirthdayReached={handleBirthdayReached}
-            birthdayReached={birthdayReached}
-          />
+        {!unlocked ? (
+          <>
+            <div className="countdown">
+              <div>{hours}<span>HOURS</span></div>
+              <div>{minutes}<span>MINUTES</span></div>
+              <div>{seconds}<span>SECONDS</span></div>
+            </div>
+            <p className="locked-text">
+              ✨ A special celebration awaits you at midnight ✨
+            </p>
+          </>
+        ) : (
+          <>
+            <h2>🎉 It’s finally time! 🎉</h2>
+            <div className="gallery">
+              {IMAGES.map((src, i) => (
+                <img key={i} src={src} alt={`memory-${i}`} />
+              ))}
+            </div>
 
-          <section className="teaser">
-            <h2 id="teaserHeading">
-              ✨ A special celebration awaits you at midnight... ✨
-            </h2>
-            <p className="teaser-hint">Something magical is about to unfold 💫</p>
-          </section>
-
-          <button
-            id="surpriseBtn"
-            className="celebrate-btn"
-            disabled={true}
-            style={{ opacity: 0.5, cursor: "not-allowed" }}
-          >
-            🔒 Locked until {UNLOCK_DATE.toLocaleDateString()}
-          </button>
-        </div>
-      )}
-
-      {/* AFTER BIRTHDAY: Show full celebration - TRUE conditional rendering */}
-      {birthdayReached && (
-        <>
-          {/* PAGE 1: Birthday Greeting */}
-          <div
-            ref={page1Ref}
-            className={`page ${currentPage === 1 ? "active" : ""}`}
-            style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
-          >
-            <section className="hero">
-              <h1 id="heroTitle">
-                Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
-              </h1>
-              <p>A celebration crafted with love, just for you 💗</p>
-            </section>
-
-            <Countdown
-              onBirthdayReached={handleBirthdayReached}
-              birthdayReached={birthdayReached}
-            />
-
-            <section className="teaser">
-              <h2 id="teaserHeading">💖 Ready for your surprise! 💖</h2>
-              <p className="teaser-hint">Something magical is about to unfold 💫</p>
-            </section>
-
-            <button
-              id="surpriseBtn"
-              className="celebrate-btn"
-              onClick={() => goToPage(2)}
-            >
-              🎀 Let's Celebrate
-            </button>
-          </div>
-
-          {/* PAGE 2: Celebration/QNA Page */}
-          <div
-            ref={page2Ref}
-            className={`page ${currentPage === 2 ? "active" : ""}`}
-            style={{ visibility: currentPage === 2 ? "visible" : "hidden" }}
-          >
-            <CelebrationPage
-              onComplete={() => goToPage(3)}
-              musicPlayerRef={musicPlayerRef}
-            />
-          </div>
-
-          {/* PAGE 3: Message Card */}
-          <div
-            ref={page3Ref}
-            className={`page ${currentPage === 3 ? "active" : ""}`}
-            style={{ visibility: currentPage === 3 ? "visible" : "hidden" }}
-          >
-            <button className="back-btn" onClick={() => goToPage(2)}>
-              ← Back
-            </button>
-            <MessageCard isActive={currentPage === 3} />
-            <button className="page-nav-btn" onClick={() => goToPage(4)}>
-              📸 View Our Memories
-            </button>
-          </div>
-
-          {/* PAGE 4: Gallery */}
-          <div
-            ref={page4Ref}
-            className={`page ${currentPage === 4 ? "active" : ""}`}
-            style={{ visibility: currentPage === 4 ? "visible" : "hidden" }}
-          >
-            <button className="back-btn" onClick={() => goToPage(3)}>
-              ← Back
-            </button>
-            <Gallery isActive={currentPage === 4} />
-            <section className="final">
-              <h2 className="final-message">💖 Forever Yours — Mother of Dragons, MD 🐉 💖</h2>
-              <p className="final-subtitle">With admiration, loyalty, and feelings that refuse to be archived ✨</p>
-            </section>
-          </div>
-        </>
-      )}
-
-      {/* Effects */}
-      {showEffects && <Effects />}
+            <audio controls autoPlay loop>
+              <source src="/music.mp3" type="audio/mpeg" />
+            </audio>
+          </>
+        )}
+      </div>
     </div>
   );
 }
-
 export default App;
