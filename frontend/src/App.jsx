@@ -22,7 +22,7 @@ const YOUR_NAME = "Arnav";
 
 /*
   ✅ USE TIMESTAMP (NOT Date object)
-  Midnight 1 Feb 2026 IST
+const UNLOCK_TIMESTAMP = new Date("2026-02-01T00:00:00+05:30").getTime();
 */
 const UNLOCK_TIMESTAMP = new Date("2026-02-01T00:00:00+05:30").getTime();
 
