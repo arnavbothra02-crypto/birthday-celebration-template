@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { PERSON_NAME } from "../config";
+import { PERSON_NAME, BIRTHDAY_MESSAGE, CLOSING_SIGNATURE } from "../config";
 import Confetti from "./Confetti";
 import "./MessageCard.css";
 
@@ -16,19 +16,9 @@ function MessageCard({ isActive }) {
 
   const message = `Dear ${PERSON_NAME},
 
-This is a formal yet deeply personal announcement marking the annual celebration of someone who continues to redefine excellence simply by existing.
+${BIRTHDAY_MESSAGE}
 
-In every role you step into — friend, dreamer, force of nature — you operate with quiet confidence, unmatched grace, and an authority that needs no validation.
-
-Your impact is subtle but permanent. Your presence turns ordinary moments into memories and chaos into something strangely calm.
-
-Today, we acknowledge you not just as a birthday girl, but as an institution in yourself.
-
-Signed with admiration, loyalty, and feelings that refuse to be archived,
-Mother of Dragons, MD 🐉
-
-Approved, always watching from a distance,
-CEO of Missing Her`;
+${CLOSING_SIGNATURE}`;
 
   // Handle page transitions
   useEffect(() => {
