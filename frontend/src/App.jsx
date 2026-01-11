@@ -21,7 +21,7 @@ const PERSONAL_MESSAGE = "Happy Birthday ❤️ This is just for you.";
 const YOUR_NAME = "Arnav";
 
 // ⏳ TEMP FUTURE DATE TO SHOW COUNTDOWN
-const UNLOCK_DATE = new Date("2026-01-12T00:00:00");
+const UNLOCK_DATE = new Date("2026-02-01T00:00:00");
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
