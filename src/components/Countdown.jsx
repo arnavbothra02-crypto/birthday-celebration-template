@@ -1,44 +1,70 @@
 import { useEffect, useState } from "react";
+import "./Countdown.css";
 
-export default function Countdown({ unlockTimestamp, onBirthdayReached }) {
-  const [now, setNow] = useState(Date.now());
+function Countdown({ unlockTimestamp, onBirthdayReached }) {
+  const calculateTimeLeft = () => {
+    const now = Date.now();
+    const diff = unlockTimestamp - now;
+
+    if (diff <= 0) {
+      return {
+        done: true,
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
+    }
+
+    return {
+      done: false,
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / (1000 * 60)) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  };
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setNow(Date.now());
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        const updated = calculateTimeLeft();
+
+        if (!prev.done && updated.done) {
+          onBirthdayReached?.();
+        }
+
+        return updated;
+      });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(timer);
+  }, [unlockTimestamp]);
 
-  const diff = unlockTimestamp - now;
-
-  const totalSeconds = Math.max(0, Math.floor(diff / 1000));
-  const days = Math.floor(totalSeconds / (60 * 60 * 24));
-  const hours = Math.floor((totalSeconds / (60 * 60)) % 24);
-  const minutes = Math.floor((totalSeconds / 60) % 60);
-  const seconds = Math.floor(totalSeconds % 60);
-
-  useEffect(() => {
-    if (diff <= 0) {
-      onBirthdayReached();
-    }
-  }, [diff, onBirthdayReached]);
+  if (timeLeft.done) return null;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "20px",
-        justifyContent: "center",
-        fontSize: "24px",
-        marginTop: "20px",
-      }}
-    >
-      <div>{days}d</div>
-      <div>{hours}h</div>
-      <div>{minutes}m</div>
-      <div>{seconds}s</div>
+    <div className="countdown">
+      <div className="time-box">
+        <span>{timeLeft.days}</span>
+        <small>Days</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.hours}</span>
+        <small>Hours</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.minutes}</span>
+        <small>Minutes</small>
+      </div>
+      <div className="time-box">
+        <span>{timeLeft.seconds}</span>
+        <small>Seconds</small>
+      </div>
     </div>
   );
 }
+
+export default Countdown;
