@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import "./Countdown.css";
 
-function Countdown({ unlockDate, onBirthdayReached, birthdayReached }) {
+export default function Countdown({
+  unlockDate,
+  birthdayReached,
+  onBirthdayReached,
+}) {
   const calculateTimeLeft = () => {
-    const now = new Date();
-    const difference = unlockDate - now;
-
-    if (difference <= 0) {
-      onBirthdayReached();
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-    }
+    const difference = unlockDate - new Date();
+    if (difference <= 0) return null;
 
     return {
       days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -20,25 +19,42 @@ function Countdown({ unlockDate, onBirthdayReached, birthdayReached }) {
   };
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [flip, setFlip] = useState(false);
 
   useEffect(() => {
-    if (birthdayReached) return;
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      const updated = calculateTimeLeft();
+
+      if (!updated) {
+        clearInterval(timer);
+        onBirthdayReached();
+        return;
+      }
+
+      setFlip((prev) => !prev);
+      setTimeLeft(updated);
     }, 1000);
+
     return () => clearInterval(timer);
-  }, [birthdayReached]);
+  }, [unlockDate]);
+
+  if (!timeLeft) return null;
+
+  const renderUnit = (value, label, pulse = false) => (
+    <div className={`time-box ${flip ? "flip" : ""} ${pulse ? "pulse" : ""}`}>
+      <span className="time-value">{String(value).padStart(2, "0")}</span>
+      <span className="time-label">{label}</span>
+    </div>
+  );
 
   return (
     <div className="countdown-wrapper">
-      {Object.entries(timeLeft).map(([label, value]) => (
-        <div className="countdown-card" key={label}>
-          <span className="countdown-number">{value}</span>
-          <span className="countdown-label">{label}</span>
-        </div>
-      ))}
+      <div className="countdown-glass">
+        {renderUnit(timeLeft.days, "Days")}
+        {renderUnit(timeLeft.hours, "Hours")}
+        {renderUnit(timeLeft.minutes, "Minutes")}
+        {renderUnit(timeLeft.seconds, "Seconds", timeLeft.minutes === 0)}
+      </div>
     </div>
   );
 }
-
-export default Countdown;
