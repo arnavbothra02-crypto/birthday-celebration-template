@@ -101,94 +101,119 @@ function App() {
       <MusicPlayer ref={musicPlayerRef} />
       <Hearts />
 
-      {/* PAGE 1: Countdown Timer */}
-      <div
-        ref={page1Ref}
-        className={`page ${currentPage === 1 ? "active" : ""}`}
-        style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
-      >
-        <section className="hero">
-          <h1 id="heroTitle">
-            {birthdayReached ? (
-              <>
+      {/* BEFORE BIRTHDAY: Show ONLY countdown - TRUE conditional rendering */}
+      {!birthdayReached && (
+        <div ref={page1Ref} className="page active">
+          <section className="hero">
+            <h1 id="heroTitle">
+              Counting down to <span className="highlight">{PERSON_NAME}'s</span>{" "}
+              special day 🎂
+            </h1>
+            <p>A celebration crafted with love, just for you 💗</p>
+          </section>
+
+          <Countdown
+            onBirthdayReached={handleBirthdayReached}
+            birthdayReached={birthdayReached}
+          />
+
+          <section className="teaser">
+            <h2 id="teaserHeading">
+              ✨ A special celebration awaits you at midnight... ✨
+            </h2>
+            <p className="teaser-hint">Something magical is about to unfold 💫</p>
+          </section>
+
+          <button
+            id="surpriseBtn"
+            className="celebrate-btn"
+            disabled={true}
+            style={{ opacity: 0.5, cursor: "not-allowed" }}
+          >
+            🔒 Locked until {UNLOCK_DATE.toLocaleDateString()}
+          </button>
+        </div>
+      )}
+
+      {/* AFTER BIRTHDAY: Show full celebration - TRUE conditional rendering */}
+      {birthdayReached && (
+        <>
+          {/* PAGE 1: Birthday Greeting */}
+          <div
+            ref={page1Ref}
+            className={`page ${currentPage === 1 ? "active" : ""}`}
+            style={{ visibility: currentPage === 1 ? "visible" : "hidden" }}
+          >
+            <section className="hero">
+              <h1 id="heroTitle">
                 Happy Birthday <span className="highlight">{PERSON_NAME}</span> 🎂
-              </>
-            ) : (
-              <>
-                Counting down to <span className="highlight">{PERSON_NAME}'s</span>{" "}
-                special day 🎂
-              </>
-            )}
-          </h1>
-          <p>A celebration crafted with love, just for you 💗</p>
-        </section>
+              </h1>
+              <p>A celebration crafted with love, just for you 💗</p>
+            </section>
 
-        <Countdown
-          onBirthdayReached={handleBirthdayReached}
-          birthdayReached={birthdayReached}
-        />
+            <Countdown
+              onBirthdayReached={handleBirthdayReached}
+              birthdayReached={birthdayReached}
+            />
 
-        <section className="teaser">
-          <h2 id="teaserHeading">
-            {birthdayReached
-              ? "💖 Ready for your surprise! 💖"
-              : "✨ A special celebration awaits you at midnight... ✨"}
-          </h2>
-          <p className="teaser-hint">Something magical is about to unfold 💫</p>
-        </section>
+            <section className="teaser">
+              <h2 id="teaserHeading">💖 Ready for your surprise! 💖</h2>
+              <p className="teaser-hint">Something magical is about to unfold 💫</p>
+            </section>
 
-        <button
-          id="surpriseBtn"
-          className="celebrate-btn"
-          disabled={!birthdayReached}
-          onClick={() => goToPage(2)}
-        >
-          🎀 Let's Celebrate
-        </button>
-      </div>
+            <button
+              id="surpriseBtn"
+              className="celebrate-btn"
+              onClick={() => goToPage(2)}
+            >
+              🎀 Let's Celebrate
+            </button>
+          </div>
 
-      {/* PAGE 2: Celebration/QNA Page */}
-      <div
-        ref={page2Ref}
-        className={`page ${currentPage === 2 ? "active" : ""}`}
-        style={{ visibility: currentPage === 2 ? "visible" : "hidden" }}
-      >
-        <CelebrationPage
-          onComplete={() => goToPage(3)}
-          musicPlayerRef={musicPlayerRef}
-        />
-      </div>
+          {/* PAGE 2: Celebration/QNA Page */}
+          <div
+            ref={page2Ref}
+            className={`page ${currentPage === 2 ? "active" : ""}`}
+            style={{ visibility: currentPage === 2 ? "visible" : "hidden" }}
+          >
+            <CelebrationPage
+              onComplete={() => goToPage(3)}
+              musicPlayerRef={musicPlayerRef}
+            />
+          </div>
 
-      {/* PAGE 3: Message Card */}
-      <div
-        ref={page3Ref}
-        className={`page ${currentPage === 3 ? "active" : ""}`}
-        style={{ visibility: currentPage === 3 ? "visible" : "hidden" }}
-      >
-        <button className="back-btn" onClick={() => goToPage(2)}>
-          ← Back
-        </button>
-        <MessageCard isActive={currentPage === 3} />
-        <button className="page-nav-btn" onClick={() => goToPage(4)}>
-          📸 View Our Memories
-        </button>
-      </div>
+          {/* PAGE 3: Message Card */}
+          <div
+            ref={page3Ref}
+            className={`page ${currentPage === 3 ? "active" : ""}`}
+            style={{ visibility: currentPage === 3 ? "visible" : "hidden" }}
+          >
+            <button className="back-btn" onClick={() => goToPage(2)}>
+              ← Back
+            </button>
+            <MessageCard isActive={currentPage === 3} />
+            <button className="page-nav-btn" onClick={() => goToPage(4)}>
+              📸 View Our Memories
+            </button>
+          </div>
 
-      {/* PAGE 4: Gallery */}
-      <div
-        ref={page4Ref}
-        className={`page ${currentPage === 4 ? "active" : ""}`}
-        style={{ visibility: currentPage === 4 ? "visible" : "hidden" }}
-      >
-        <button className="back-btn" onClick={() => goToPage(3)}>
-          ← Back
-        </button>
-        <Gallery isActive={currentPage === 4} />
-        <section className="final">
-          <h2 className="final-message">💖 Forever Yours — Mother of Dragons, MD 🐉 💖</h2>
-          <p className="final-subtitle">With admiration, loyalty, and feelings that refuse to be archived ✨</p>
-        </section>
-      </div>
+          {/* PAGE 4: Gallery */}
+          <div
+            ref={page4Ref}
+            className={`page ${currentPage === 4 ? "active" : ""}`}
+            style={{ visibility: currentPage === 4 ? "visible" : "hidden" }}
+          >
+            <button className="back-btn" onClick={() => goToPage(3)}>
+              ← Back
+            </button>
+            <Gallery isActive={currentPage === 4} />
+            <section className="final">
+              <h2 className="final-message">💖 Forever Yours — Mother of Dragons, MD 🐉 💖</h2>
+              <p className="final-subtitle">With admiration, loyalty, and feelings that refuse to be archived ✨</p>
+            </section>
+          </div>
+        </>
+      )}
 
       {/* Effects */}
       {showEffects && <Effects />}
