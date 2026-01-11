@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import "./Countdown.css";
 
-export default function Countdown({ unlockDate, onBirthdayReached }) {
-  const getTime = () => {
-    const diff = unlockDate.getTime() - new Date().getTime();
+export default function Countdown({ unlockTimestamp, onBirthdayReached }) {
+  const getTimeLeft = () => {
+    const diff = unlockTimestamp - Date.now();
 
     if (diff <= 0) {
       return {
@@ -24,12 +24,12 @@ export default function Countdown({ unlockDate, onBirthdayReached }) {
     };
   };
 
-  const [time, setTime] = useState(getTime());
+  const [time, setTime] = useState(getTimeLeft());
   const [flip, setFlip] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const updated = getTime();
+      const updated = getTimeLeft();
       setTime(updated);
       setFlip((f) => !f);
 
